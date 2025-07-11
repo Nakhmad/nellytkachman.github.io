@@ -1,0 +1,100 @@
+---
+title: "xkcd Color Survey"
+format: html
+---
+
+**acquire data**
+```{r}
+
+library(tidytuesdayR)
+library(tidyverse)
+library(plotly)
+
+
+tuesdata <- tidytuesdayR::tt_load('2025-07-08')
+answers <- tuesdata$answers
+color_ranks <- tuesdata$color_ranks
+users <- tuesdata$users
+
+```
+```{r}
+rgb_matrix <- col2rgb(color_ranks$hex)
+rgb_df <- as.data.frame(t(rgb_matrix))
+red <- rgb_df %>% 
+  mutate(rank = row_number()) %>% 
+  right_join(color_ranks, join_by(rank)) %>% 
+  filter(str_detect(color, "red$")) %>% 
+  arrange(red, green, blue) %>% 
+  mutate(row = row_number(), graphcolor = "red")
+
+red %>% 
+  ggplot(aes(x = row, y = graphcolor, label = color, fill = hex)) +
+  geom_tile()+
+  scale_fill_identity()+
+  geom_text(color = "black")+
+  coord_flip()
+
+
+```
+```{r}
+rgb_matrix <- col2rgb(color_ranks$hex)
+rgb_df <- as.data.frame(t(rgb_matrix)) %>% mutate(rank = row_number())
+colors_named <- color_ranks %>% 
+  left_join(rgb_df, join_by(rank)) %>% 
+  mutate(rainbow = case_when(
+    str_detect(color,"red$") ~ "red", 
+    str_detect(color,"orange$") ~ "orange",
+    str_detect(color,"yellow$") ~ "yellow",
+    str_detect(color,"green$") ~ "green",
+    str_detect(color,"blue$") ~ "blue",
+    str_detect(color,"purple$") ~ "purple",
+    str_detect(color,"pink$") ~ "pink",
+    str_detect(color,"brown$") ~ "brown", 
+    str_detect(color,"black$") ~ "black",
+    str_detect(color,"grey$") ~ "grey",
+    str_detect(color,"black$") ~ "black",
+    str_detect(color,"white$") ~ "white",
+    TRUE ~ "other"
+  )) %>% 
+  mutate(category = case_when(rainbow == "red" ~ 1,
+                              rainbow == "orange" ~ 2, 
+                              rainbow == "yellow" ~ 3, 
+                              rainbow == "green" ~ 4, 
+                              rainbow == "blue" ~ 5, 
+                              rainbow == "purple" ~ 6, 
+                              rainbow == "pink" ~ 7, 
+                              rainbow == "brown" ~ 8, 
+                              rainbow == "grey" ~ 9, 
+                              rainbow == "black" ~ 10,
+                              rainbow == "white" ~ 11)) %>% 
+  arrange(red, green, blue) %>% 
+  group_by(rainbow) %>% 
+  mutate(row = row_number())
+
+p <- colors_named %>% 
+  ggplot(aes(
+    x = row, 
+    y = reorder(rainbow, category), 
+    text = paste0("<b>Color:</b> ", color, "<br>", "<bHex:</b> ", hex), 
+    label = color, fill = hex))+
+  geom_tile()+
+  scale_fill_identity()+
+  coord_flip()+
+  labs(title = " Named colors using the 11 basic color terms", 
+       subtitle = "Based on the 2010 xkcd Color Name Survey, this graph shows colors that participants named using a descriptive version of the 11 basic color terms in English \nFor example 'dark red' is a red, 'reddish orange' is orange and 'yellowgreen' is green,", 
+       caption = "TidyTuesday July 8, 2025 \nData Source: xkcd Color Survey", 
+       y = "Basic Color Term", 
+       x = "")+
+  theme(panel.background = element_rect(fill = "#fefdf8"), legend.position = "none")
+
+ggplotly(p, tooltip = "text")
+```
+
+
+
+```{r} 
+#| include: false
+#ggsave(here::here("TidyTuesday", "2025-07-08-xkcd-colors", "red.png"), width = 6, height = 4, bg = "#f8f9fa")
+
+#ggsave(here::here("TidyTuesday", "2025-07-08-xkcd-colors", "basic_color_terms.png"), width = 6, height = 4, bg = "#f8f9fa")
+```
