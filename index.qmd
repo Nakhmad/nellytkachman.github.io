@@ -1,5 +1,5 @@
 ---
-title: "nellytkachman.github.io"
+title: "Nelly Tkachman"
 ---
 
 This is a Quarto website.

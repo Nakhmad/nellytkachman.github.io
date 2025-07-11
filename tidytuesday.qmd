@@ -1,5 +1,10 @@
 ---
 title: "tidytuesday"
-format: html
+listing: 
+  contents: TidyTuesday 
+  type: grid
+  sort: "date desc" 
+  categories: true 
+  page-size: 50
 ---
 

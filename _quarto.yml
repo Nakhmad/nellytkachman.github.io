@@ -3,12 +3,14 @@ project:
   output-dir: docs
 
 website:
-  title: "nellytkachman.github.io"
+  title: "nNelly Tkachman"
   navbar:
     left:
       - href: index.qmd
         text: Home
       - about.qmd
+      - tidytuesday.qmd
+      
 format:
   html:
     theme:
