@@ -91,10 +91,3 @@ ggplotly(p, tooltip = "text")
 ```
 
 
-
-```{r} 
-#| include: false
-#ggsave(here::here("TidyTuesday", "2025-07-08-xkcd-colors", "red.png"), width = 6, height = 4, bg = "#f8f9fa")
-
-#ggsave(here::here("TidyTuesday", "2025-07-08-xkcd-colors", "basic_color_terms.png"), width = 6, height = 4, bg = "#f8f9fa")
-```
