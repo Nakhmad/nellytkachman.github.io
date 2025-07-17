@@ -1,5 +1,5 @@
 ---
-title: "Biritsh Library Funding"
+title: "British Library Funding"
 format: html
 author: Nelly Tkachman
 date: 2025-07-15
@@ -27,9 +27,11 @@ tuesdata <- tidytuesdayR::tt_load('2025-07-15')
 bl_funding <- tuesdata$bl_funding
 ```
 
-**Simple look at funding overtime** Red is nominal funding Blue line is
-funding adjusted in 2025 Green line is adjusted funding that was done in
-2016, based on an older inflation adjustment calculator
+-   **Simple look at funding overtime**
+-   Red is nominal funding
+-   Blue line is funding adjusted in 2025
+-   Green line is adjusted funding that was done in 2016, based on an
+    older inflation adjustment calculator
 
 ```{r}
 #| message: false
