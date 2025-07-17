@@ -1,0 +1,110 @@
+---
+title: "Biritsh Library Funding"
+format: html
+author: Nelly Tkachman
+date: 2025-07-15
+execute: 
+  code-fold: true
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+British Library Funding from 1998 to 2023 Looking at the funding and the
+funding adjusted for inflation
+
+**Acquire date**
+
+```{r}
+#| message: false
+#| warning: false
+#| code-fold: true
+
+library(tidytuesdayR)
+library(tidyverse)
+
+tuesdata <- tidytuesdayR::tt_load('2025-07-15')
+bl_funding <- tuesdata$bl_funding
+```
+
+**Simple look at funding overtime** Red is nominal funding Blue line is
+funding adjusted in 2025 Green line is adjusted funding that was done in
+2016, based on an older inflation adjustment calculator
+
+```{r}
+#| message: false
+#| warning: false
+#| code-fold: true
+bl_funding %>% 
+  ggplot() +
+  geom_line(aes(x = year, y = nominal_gbp_millions), color = "red")+
+  geom_line(aes(x = year, y = total_y2000_gbp_millions), color = "blue")+
+  geom_line(aes(x = year, y = year_2000_gbp_millions), color = "green")
+
+
+```
+
+**How much of funding is from grant-in-aid**
+
+```{r}
+#| message: false
+#| warning: false
+#| code-fold: true
+
+bl_funding %>% 
+  ggplot()+
+  geom_bar(aes(x = year, y = nominal_gbp_millions), stat = "identity", fill = "red")+
+  geom_bar(aes(x = year, y = gia_gbp_millions), stat = "identity", fill = "blue")
+```
+
+**British Library funding break down**
+
+-   **gia** - grant-in-aid funding (core funding from UK government)
+-   **services** - funding from service delivery within the remit of
+    being a charity
+-   **voluntary** - funding covering all voluntary contributions and
+    donations, including the valuation of donated collection items
+-   **investment** - funding from returns on savings and investments
+-   **other** - anything that doesn't fit above
+
+```{r}
+#| message: false
+#| warning: false
+#| code-fold: true
+
+bl_funding_pivoted <- bl_funding %>% 
+  pivot_longer(cols = 2:17, names_to = "value", values_to = "quantity") %>% 
+  mutate(source = case_when(
+    value == "nominal_gbp_millions" ~ "total_reported_funding", 
+    value == "gia_gbp_millions" ~ "reported_funding", 
+    value == "voluntary_gbp_millions" ~ "reported_funding", 
+    value == "investment_gbp_millions" ~ "reported_funding", 
+    value == "services_gbp_millions" ~ "reported_funding", 
+    value == "other_gbp_millions" ~ "reported_funding", 
+    value == "year_2000_gbp_millions" ~ "2016_adjusted_funding", 
+    value == "total_y2000_gbp_millions" ~ "total_adjusted_funding",
+    value == "gia_y2000_gbp_millions" ~ "adjusted_funding", 
+    value == "voluntary_y2000_gbp_millions" ~ "adjusted_funding",
+    value == "investment_y2000_gbp_millions" ~ "adjusted_funding",
+    value == "services_y2000_gbp_millions" ~ "adjusted_funding", 
+    value == "other_y2000_gbp_millions" ~ "adjusted_funding", 
+    value == "inflation_adjustment" ~ "inflation_adjustment",
+    value == "percentage_of_y2000_income" ~ "percentage_of_y2000_income",
+    value == "gia_as_percent_of_peak_gia" ~ "gia_as_percent_of_peak_gia"
+  ))
+
+bl_funding_pivoted %>% 
+  filter(source == "reported_funding") %>% 
+  ggplot(aes(x = year, y = quantity, fill = fct_reorder(value, quantity)))+ 
+  geom_area()+
+  labs(title = "British Library funding streams 1998 - 2023 (not inflation adjusted)")+
+  ylab("GBP in millions")
+
+bl_funding_pivoted %>% 
+  filter(source == "adjusted_funding") %>% 
+  ggplot(aes(x = year, y = quantity, fill = fct_reorder(value, quantity)))+ 
+  geom_area()+
+  labs(title = "British Library funding streams 1998 - 2023 (inflation adjusted)")+
+  ylab("GBP in y2000 millions")
+
+```
