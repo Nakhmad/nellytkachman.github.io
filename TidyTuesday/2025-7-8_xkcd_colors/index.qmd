@@ -1,10 +1,24 @@
 ---
 title: "xkcd Color Survey"
 format: html
+author: Nelly Tkachman
+date: 2025-07-08
+execute: 
+  code-fold: true
+  
+  
 ---
 
-**acquire data**
+TidyTuesday work for 7/8/25
+
+The xKCD color survey asked people to name the colors that popped up on their screens.
+
+**Acquire data**
+
 ```{r}
+#| message: false
+#| warning: false
+#| code-fold: true
 
 library(tidytuesdayR)
 library(tidyverse)
@@ -17,7 +31,11 @@ color_ranks <- tuesdata$color_ranks
 users <- tuesdata$users
 
 ```
+**Reds ranked by red value in RGB**
 ```{r}
+#| message: false
+#| warning: false
+#| code-fold: true
 rgb_matrix <- col2rgb(color_ranks$hex)
 rgb_df <- as.data.frame(t(rgb_matrix))
 red <- rgb_df %>% 
@@ -36,7 +54,12 @@ red %>%
 
 
 ```
+**Colors**
+Based on the 2010 xkcd Color Name Survey, this graph shows colors that participants named using a descriptive version of the 11 basic color terms in English \nFor example 'dark red' is a red, 'reddish orange' is orange and 'yellowgreen' is green
 ```{r}
+#| message: false
+#| warning: false
+#| code-fold: true
 rgb_matrix <- col2rgb(color_ranks$hex)
 rgb_df <- as.data.frame(t(rgb_matrix)) %>% mutate(rank = row_number())
 colors_named <- color_ranks %>% 
@@ -89,5 +112,3 @@ p <- colors_named %>%
 
 ggplotly(p, tooltip = "text")
 ```
-
-
